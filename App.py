@@ -117,105 +117,187 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# FIXED FLOATING AI ROBOT ASSISTANT WIDGET
+# DRAGGABLE & VOICE-ENABLED SMALL ROBOT ASSISTANT WIDGET
 # ---------------------------------------------------------
 robot_assistant_html = """
 <style>
-    .bot-fixed-container {
+    #draggable-bot {
         position: fixed;
-        bottom: 25px;
-        right: 25px;
+        bottom: 30px;
+        right: 30px;
         z-index: 999999;
         font-family: 'Plus Jakarta Sans', sans-serif;
+        cursor: grab;
+        user-select: none;
     }
-    .bot-button {
+    #draggable-bot:active {
+        cursor: grabbing;
+    }
+    .mini-bot-icon {
         background: linear-gradient(135deg, #06b6d4, #7c3aed);
-        width: 65px;
-        height: 65px;
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: pointer;
-        box-shadow: 0 10px 30px rgba(6, 182, 212, 0.6);
+        box-shadow: 0 6px 20px rgba(6, 182, 212, 0.6);
         border: 2px solid rgba(255,255,255,0.4);
-        font-size: 32px;
+        font-size: 24px;
         transition: transform 0.2s ease;
     }
-    .bot-button:hover {
-        transform: scale(1.08);
+    .mini-bot-icon:hover {
+        transform: scale(1.1);
     }
     .bot-chat-box {
         display: none;
         position: absolute;
-        bottom: 80px;
+        bottom: 60px;
         right: 0;
-        width: 320px;
+        width: 300px;
         background: #0f172a;
         border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 20px;
+        border-radius: 16px;
         box-shadow: 0 20px 40px rgba(0,0,0,0.8);
-        padding: 16px;
+        padding: 14px;
         color: white;
+        cursor: default;
     }
 </style>
 
-<div class="bot-fixed-container">
-    <div class="bot-button" onclick="toggleBotChat()">🤖</div>
+<div id="draggable-bot">
+    <div class="mini-bot-icon" onclick="toggleBotChat()" title="पकड़कर कहीं भी खींचें">🤖</div>
 
     <div id="bot-chat-window" class="bot-chat-box">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
-            <span style="font-weight: bold; color: #38bdf8; font-size: 14px;">🤖 StudioX AI Assistant</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; margin-bottom: 8px;">
+            <span style="font-weight: bold; color: #38bdf8; font-size: 13px;">🤖 AI Robot (पकड़कर घुमाएं)</span>
             <span onclick="toggleBotChat()" style="cursor: pointer; color: #94a3b8; font-weight: bold;">✕</span>
         </div>
         
-        <div id="chat-logs" style="height: 190px; overflow-y: auto; font-size: 12px; margin-bottom: 10px; padding-right: 5px;">
-            <p style="background: rgba(56, 189, 248, 0.15); padding: 8px; border-radius: 8px; color: #e2e8f0; margin: 0 0 8px 0;">
-                👋 <b>नमस्ते! मैं आपका एआई रोबोट हूँ।</b><br/>मुझसे पूछें कि QR Code, PDF या App कैसे बनाएं!
+        <div id="chat-logs" style="height: 160px; overflow-y: auto; font-size: 12px; margin-bottom: 8px; padding-right: 4px;">
+            <p style="background: rgba(56, 189, 248, 0.15); padding: 7px; border-radius: 8px; color: #e2e8f0; margin: 0 0 6px 0;">
+                👋 <b>नमस्ते!</b> मुझे पकड़कर स्क्रीन पर कहीं भी ले जा सकते हैं। टाइप करें या नीचे माइक दबाकर बोलें!
             </p>
         </div>
 
-        <div style="display: flex; gap: 5px;">
-            <input type="text" id="user-msg" placeholder="कुछ भी पूछें..." style="flex: 1; padding: 8px 10px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 11px;">
-            <button onclick="sendBotMsg()" style="background: #06b6d4; color: white; border: none; padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold;">भेजें</button>
+        <div style="display: flex; gap: 4px; margin-bottom: 6px;">
+            <input type="text" id="user-msg" placeholder="सवाल पूछें..." style="flex: 1; padding: 6px 8px; border-radius: 6px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 11px;">
+            <button onclick="sendBotMsg()" style="background: #06b6d4; color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold;">भेजें</button>
         </div>
+        <button onclick="startRobotVoice()" style="width: 100%; background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; padding: 6px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold;">🎤 बोलकर पूछें (Voice Input)</button>
     </div>
 </div>
 
 <script>
+// DRAG AND DROP LOGIC FOR ROBOT
+const botEl = document.getElementById("draggable-bot");
+let isDragging = false;
+let offsetX, offsetY;
+
+botEl.addEventListener("mousedown", (e) => {
+    // Only drag if clicking the bot icon, not inside chat box
+    if(e.target.closest('.bot-chat-box')) return;
+    isDragging = true;
+    offsetX = e.clientX - botEl.getBoundingClientRect().left;
+    offsetY = e.clientY - botEl.getBoundingClientRect().top;
+    botEl.style.cursor = "grabbing";
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    botEl.style.left = (e.clientX - offsetX) + "px";
+    botEl.style.top = (e.clientY - offsetY) + "px";
+    botEl.style.bottom = "auto";
+    botEl.style.right = "auto";
+});
+
+document.addEventListener("mouseup", () => {
+    isDragging = false;
+    botEl.style.cursor = "grab";
+});
+
+// TOUCH SUPPORT FOR MOBILE DRAGGING
+botEl.addEventListener("touchstart", (e) => {
+    if(e.target.closest('.bot-chat-box')) return;
+    isDragging = true;
+    offsetX = e.touches[0].clientX - botEl.getBoundingClientRect().left;
+    offsetY = e.touches[0].clientY - botEl.getBoundingClientRect().top;
+});
+
+document.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+    botEl.style.left = (e.touches[0].clientX - offsetX) + "px";
+    botEl.style.top = (e.touches[0].clientY - offsetY) + "px";
+    botEl.style.bottom = "auto";
+    botEl.style.right = "auto";
+}, { passive: true });
+
+document.addEventListener("touchend", () => {
+    isDragging = false;
+});
+
+// CHAT TOGGLE & BOT RESPONSES
 function toggleBotChat() {
     var win = document.getElementById("bot-chat-window");
     win.style.display = (win.style.display === "none" || win.style.display === "") ? "block" : "none";
 }
 
-function sendBotMsg() {
-    var input = document.getElementById("user-msg");
+function processQuery(text) {
     var logs = document.getElementById("chat-logs");
-    var text = input.value.trim().toLowerCase();
+    logs.innerHTML += "<p style='text-align: right; margin: 4px 0;'><span style='background: #4f46e5; padding: 5px 8px; border-radius: 6px; display: inline-block; color: white;'>" + text + "</span></p>";
     
-    if (text === "") return;
-
-    logs.innerHTML += "<p style='text-align: right; margin: 4px 0;'><span style='background: #4f46e5; padding: 6px 10px; border-radius: 8px; display: inline-block; color: white;'>" + input.value + "</span></p>";
-    input.value = "";
-
-    var reply = "💡 आप ऊपर दिए गए टैब्स में से अपने काम का टूल चुन सकते हैं!";
+    var reply = "💡 आप ऊपर दिए गए टैब्स का उपयोग कर सकते हैं!";
+    var lowerText = text.toLowerCase();
     
-    if (text.includes("qr") || text.includes("क्यूआर")) {
-        reply = "📲 <b>QR Generator:</b> 'Social QR Generator' टैब में जाएं, अपने चैनल/अकाउंट का लिंक डालें और QR कोड डाउनलोड करें!";
-    } else if (text.includes("pdf") || text.includes("पीडीएफ")) {
-        reply = "📄 <b>PDF Maker:</b> 'Instant PDF Maker' टैब में जाएं, टाइटल और टेक्स्ट लिखकर PDF बनाएं!";
-    } else if (text.includes("app") || text.includes("ऐप")) {
-        reply = "📱 <b>App Builder:</b> 'App Builder' टैब में अपने ऐप का आइडिया लिखें, एआई आपको कोड दे देगा!";
+    if (lowerText.includes("qr") || lowerText.includes("क्यूआर")) {
+        reply = "📲 <b>QR Generator:</b> पहले टैब 'Social QR Generator' में जाकर अपने चैनल का लिंक या नाम डालें!";
+    } else if (lowerText.includes("pdf") || lowerText.includes("पीडीएफ")) {
+        reply = "📄 <b>PDF Maker:</b> 'Instant PDF Maker' टैब में जाकर टेक्स्ट लिखें और PDF डाउनलोड करें!";
+    } else if (lowerText.includes("app") || lowerText.includes("ऐप")) {
+        reply = "📱 <b>App Builder:</b> 'Mobile App Builder' टैब में अपने ऐप का आइडिया लिखें!";
     }
 
     setTimeout(function() {
-        logs.innerHTML += "<p style='margin: 4px 0;'><span style='background: rgba(56, 189, 248, 0.2); padding: 6px 10px; border-radius: 8px; display: inline-block; color: #a7f3d0;'>" + reply + "</span></p>";
+        logs.innerHTML += "<p style='margin: 4px 0;'><span style='background: rgba(56, 189, 248, 0.2); padding: 5px 8px; border-radius: 6px; display: inline-block; color: #a7f3d0;'>" + reply + "</span></p>";
         logs.scrollTop = logs.scrollHeight;
     }, 400);
 }
+
+function sendBotMsg() {
+    var input = document.getElementById("user-msg");
+    var text = input.value.trim();
+    if (text === "") return;
+    input.value = "";
+    processQuery(text);
+}
+
+function startRobotVoice() {
+    if (window.hasOwnProperty('webkitSpeechRecognition')) {
+        var recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'hi-IN'; // Default Hindi/English voice support
+        recognition.start();
+
+        var logs = document.getElementById("chat-logs");
+        logs.innerHTML += "<p style='color: #f43f5e; font-size:11px; margin: 4px 0;'>🎤 सुन रहा हूँ, बोलिए...</p>";
+
+        recognition.onresult = function(e) {
+            var transcript = e.results[0][0].transcript;
+            processQuery(transcript);
+            recognition.stop();
+        };
+
+        recognition.onerror = function(e) {
+            recognition.stop();
+        }
+    } else {
+        alert("आपका ब्राउज़र वॉइस रिकग्निशन सपोर्ट नहीं करता। Chrome इस्तेमाल करें!");
+    }
+}
 </script>
 """
-components.html(robot_assistant_html, height=350)
+components.html(robot_assistant_html, height=400)
 
 # ---------------------------------------------------------
 # GLOBAL MULTILINGUAL VOICE DICTATION WIDGET
@@ -357,7 +439,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
 ])
 
 # =========================================================
-# TAB 1: SOCIAL MEDIA QR CODE GENERATOR (NEW FEATURE)
+# TAB 1: SOCIAL MEDIA QR CODE GENERATOR
 # =========================================================
 with tab1:
     st.markdown('<span class="vip-badge">QR STUDIO</span>', unsafe_allow_html=True)
@@ -372,7 +454,6 @@ with tab1:
     
     if st.button("🚀 Generate HD Social QR Code", key="btn_qr"):
         if user_handle.strip() != "":
-            # Construct URL
             final_url = user_handle
             if "YouTube" in platform and not user_handle.startswith("http"):
                 final_url = f"https://youtube.com/@{user_handle.replace('@','')}"
