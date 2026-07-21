@@ -11,14 +11,14 @@ from fpdf import FPDF
 # PAGE CONFIGURATION
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="StudioX Pro 2026 | Ultimate AI SaaS Suite",
+    page_title="StudioX Pro 2026 | Enterprise AI Suite",
     page_icon="💎",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ---------------------------------------------------------
-# LUXURY ENTERPRISE CSS STYLING
+# LUXURY ENTERPRISE CSS & AI ROBOT WIDGET STYLING
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -132,6 +132,75 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
+# FLOATING AI ROBOT ASSISTANT WIDGET (HTML/JS)
+# ---------------------------------------------------------
+robot_assistant_html = """
+<div id="bot-wrapper" style="position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: sans-serif;">
+    <!-- Floating Robot Button -->
+    <div id="bot-icon" onclick="toggleBotChat()" style="background: linear-gradient(135deg, #06b6d4, #7c3aed); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6); transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3);">
+        <span style="font-size: 30px;">🤖</span>
+    </div>
+
+    <!-- Chat Popup Window -->
+    <div id="bot-chat-window" style="display: none; position: absolute; bottom: 75px; right: 0; width: 310px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); padding: 15px; color: white;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
+            <span style="font-weight: bold; color: #38bdf8; font-size: 14px;">🤖 StudioX AI Helper</span>
+            <span onclick="toggleBotChat()" style="cursor: pointer; color: #94a3b8; font-weight: bold;">✕</span>
+        </div>
+        
+        <div id="chat-logs" style="height: 180px; overflow-y: auto; font-size: 12px; margin-bottom: 10px; padding-right: 5px;">
+            <p style="background: rgba(56, 189, 248, 0.15); padding: 8px; border-radius: 8px; color: #e2e8f0; margin: 0 0 8px 0;">
+                👋 <b>नमस्ते! मैं आपका एआई असिस्टेंट हूँ।</b><br/>मुझसे पूछें कि यह वेबसाइट कैसे काम करती है!
+            </p>
+        </div>
+
+        <div style="display: flex; gap: 5px;">
+            <input type="text" id="user-msg" placeholder="पूछें (e.g., PDF कैसे बनाएं?)..." style="flex: 1; padding: 6px 10px; border-radius: 8px; border: 1px solid #475569; background: #1e293b; color: white; font-size: 11px;">
+            <button onclick="sendBotMsg()" style="background: #06b6d4; color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: bold;">भेजें</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleBotChat() {
+    var win = document.getElementById("bot-chat-window");
+    win.style.display = (win.style.display === "none" || win.style.display === "") ? "block" : "none";
+}
+
+function sendBotMsg() {
+    var input = document.getElementById("user-msg");
+    var logs = document.getElementById("chat-logs");
+    var text = input.value.trim().toLowerCase();
+    
+    if (text === "") return;
+
+    logs.innerHTML += "<p style='text-align: right; margin: 4px 0;'><span style='background: #4f46e5; padding: 6px 10px; border-radius: 8px; display: inline-block; color: white;'>" + input.value + "</span></p>";
+    input.value = "";
+
+    var reply = "💡 आप ऊपर दिए गए टैब्स में से अपने काम का टूल चुन सकते हैं!";
+    
+    if (text.includes("pdf") || text.includes("पीडीएफ")) {
+        reply = "📄 <b>PDF Maker:</b> 'Instant PDF Maker' टैब में जाएं, टाइटल और टेक्स्ट लिखें और 'Create PDF' बटन दबाएं!";
+    } else if (text.includes("app") || text.includes("ऐप")) {
+        reply = "📱 <b>App Builder:</b> 'App Builder' टैब में जाएं और अपने ऐप का आइडिया बोलकर बताएं, एआई आपको पूरा Flutter कोड दे देगा!";
+    } else if (text.includes("code") || text.includes("कोड")) {
+        reply = "💻 <b>Web Code:</b> 'Web Code & Live Preview' टैब में जाएं, अपने पेज की जानकारी दें और लाइव प्रिव्यू देखें!";
+    } else if (text.includes("voice") || text.includes("आवाज") || text.includes("बोल")) {
+        reply = "🎙️ <b>Voice Typing:</b> हर टूल के ऊपर 'Voice Dictation' का बटन है, उस पर क्लिक करके अपनी भाषा में बोलें!";
+    } else if (text.includes("script") || text.includes("रील्स") || text.includes("shorts")) {
+        reply = "📸 <b>Virality & Scripts:</b> 'Virality & Scripts' टैब में जाकर अपनी वीडियो का टॉपिक लिखें!";
+    }
+
+    setTimeout(function() {
+        logs.innerHTML += "<p style='margin: 4px 0;'><span style='background: rgba(56, 189, 248, 0.2); padding: 6px 10px; border-radius: 8px; display: inline-block; color: #a7f3d0;'>" + reply + "</span></p>";
+        logs.scrollTop = logs.scrollHeight;
+    }, 500);
+}
+</script>
+"""
+components.html(robot_assistant_html, height=0)
+
+# ---------------------------------------------------------
 # GLOBAL MULTILINGUAL VOICE DICTATION WIDGET
 # ---------------------------------------------------------
 LANGUAGES = {
@@ -234,8 +303,6 @@ with st.sidebar:
     st.caption("2026 Master Admin Edition")
     st.markdown("---")
     
-    # MASTER SUBSCRIPTION TOGGLE CONTROL
-    st.subheader("👑 Website Control Switch")
     sub_mode = st.toggle("Enable Subscription Lock (Paywall)", value=False)
     
     if sub_mode:
@@ -265,7 +332,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# TOP BANNER AD (Show only if Sub Mode is OFF)
+# TOP BANNER AD
 if not sub_mode:
     top_ad = """
     <div style="text-align:center; margin-bottom: 20px;">
@@ -289,9 +356,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "🎙️ AI Voice Engine"
 ])
 
-# =========================================================
-# TAB 1: WEB CODE & LIVE PLAYGROUND (NEW FEATURE)
-# =========================================================
+# TAB 1: WEB CODE & LIVE PLAYGROUND
 with tab1:
     st.markdown('<span class="vip-badge">LIVE PLAYGROUND</span>', unsafe_allow_html=True)
     st.markdown("### 💻 HTML/CSS Code Generator & Live Preview")
@@ -331,9 +396,7 @@ with tab1:
         else:
             st.warning("⚠️ Enter a web concept.")
 
-# =========================================================
-# TAB 2: APP BUILDER & ZIP EXPORT (NEW FEATURE)
-# =========================================================
+# TAB 2: APP BUILDER & ZIP EXPORT
 with tab2:
     st.markdown('<span class="vip-badge">APP BUILDER</span>', unsafe_allow_html=True)
     st.markdown("### 📱 Mobile App Builder & Export Project (.ZIP)")
@@ -373,9 +436,7 @@ class MyApp extends StatelessWidget {{
         else:
             st.warning("⚠️ Describe your app idea.")
 
-# =========================================================
 # TAB 3: INSTANT PDF MAKER
-# =========================================================
 with tab3:
     st.markdown('<span class="vip-badge">PDF SUITE</span>', unsafe_allow_html=True)
     st.markdown("### 📄 Multilingual PDF Document Creator")
@@ -394,9 +455,7 @@ with tab3:
                 mime="application/pdf"
             )
 
-# =========================================================
 # TAB 4: AI ANIMATION SUITE
-# =========================================================
 with tab4:
     st.markdown('<span class="vip-badge">ANIMATION SUITE</span>', unsafe_allow_html=True)
     st.markdown("### 🎬 Sequential Animation Scene Prompts")
@@ -407,9 +466,7 @@ with tab4:
         if anim_req.strip() != "":
             st.code(f"SCENE 1: Cinematic shot of {anim_req}, 8k anime style, 60fps.\nSCENE 2: Slow motion action sequence.", language="text")
 
-# =========================================================
-# TAB 5: VIRALITY SCORE & SCRIPTS (NEW FEATURE)
-# =========================================================
+# TAB 5: VIRALITY SCORE & SCRIPTS
 with tab5:
     st.markdown('<span class="vip-badge">VIRAL ANALYTICS</span>', unsafe_allow_html=True)
     st.markdown("### 📸 Social Scripts & AI Virality Score Analyzer")
@@ -421,9 +478,7 @@ with tab5:
             st.metric(label="🔥 Estimated Virality Score", value="94 / 100", delta="High Engagement")
             st.code(f"Hook: Stop scrolling! If you don't know about {soc_topic}, you are behind in 2026!\nCaption: Must watch till the end! #{soc_topic.replace(' ','')}", language="text")
 
-# =========================================================
 # TAB 6: HD ICONS & VISUALS
-# =========================================================
 with tab6:
     st.markdown('<span class="vip-badge">IMAGE STUDIO</span>', unsafe_allow_html=True)
     st.markdown("### 🖼️ AI App Icon & Visual Studio")
@@ -435,9 +490,7 @@ with tab6:
             encoded = urllib.parse.quote(img_prompt)
             st.image(f"https://image.pollinations.ai/prompt/{encoded}?width=1024&height=1024&nologo=true", use_column_width=True)
 
-# =========================================================
 # TAB 7: AI VOICE ENGINE
-# =========================================================
 with tab7:
     st.markdown('<span class="vip-badge">VOICE SUITE</span>', unsafe_allow_html=True)
     st.markdown("### 🎙️ Text-to-Speech Engine")
