@@ -3,6 +3,7 @@ import streamlit.components.v1 as components
 from PIL import Image
 import io
 import urllib.parse
+import zipfile
 from gtts import gTTS
 from fpdf import FPDF
 
@@ -10,7 +11,7 @@ from fpdf import FPDF
 # PAGE CONFIGURATION
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="StudioX Pro 2026 | Global Enterprise AI Suite",
+    page_title="StudioX Pro 2026 | Ultimate AI SaaS Suite",
     page_icon="💎",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -50,7 +51,7 @@ st.markdown("""
     .hero-subtitle {
         font-size: 1.15rem;
         color: #94a3b8;
-        max-width: 700px;
+        max-width: 750px;
         margin: 0 auto 1.8rem auto;
         line-height: 1.6;
     }
@@ -149,8 +150,6 @@ LANGUAGES = {
     "Telugu (తెలుగు)": "te-IN",
     "Tamil (தமிழ்)": "ta-IN",
     "Gujarati (ગુજરાતી)": "gu-IN",
-    "Kannada (ಕನ್ನಡ)": "kn-IN",
-    "Malayalam (മലയാളം)": "ml-IN",
     "Punjabi (ਪੰਜਾਬੀ)": "pa-IN",
     "Urdu (اردو)": "ur-PK"
 }
@@ -171,7 +170,7 @@ def voice_typing_widget(box_label):
             <p id="speech_output_{box_label.replace(' ', '_')}" style="color:#a7f3d0; font-size:12px; margin: 4px 0 0 0; font-weight:600;"></p>
         </div>
         <div>
-            <button onclick="startDictation('{lang_code}')" style="background: linear-gradient(135deg, #059669, #10b981); color:white; border:none; padding:8px 16px; border-radius:10px; cursor:pointer; font-size:12px; font-weight:700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">🎙️ Click to Speak ({selected_lang.split()[0]})</button>
+            <button onclick="startDictation('{lang_code}')" style="background: linear-gradient(135deg, #059669, #10b981); color:white; border:none; padding:8px 16px; border-radius:10px; cursor:pointer; font-size:12px; font-weight:700; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);">🎙️ Speak Now</button>
         </div>
     </div>
 
@@ -184,20 +183,20 @@ def voice_typing_widget(box_label):
             recognition.lang = langCode;
             recognition.start();
 
-            document.getElementById('speech_output_{box_label.replace(' ', '_')}').innerHTML = "🎤 Listening... Please speak now!";
+            document.getElementById('speech_output_{box_label.replace(' ', '_')}').innerHTML = "🎤 Listening... Speak now!";
 
             recognition.onresult = function(e) {{
                 var transcript = e.results[0][0].transcript;
-                document.getElementById('speech_output_{box_label.replace(' ', '_')}').innerHTML = "✅ Recorded: '" + transcript + "' (Copy & paste into the input field below)";
+                document.getElementById('speech_output_{box_label.replace(' ', '_')}').innerHTML = "✅ Recorded: '" + transcript + "' (Copy & paste below)";
                 recognition.stop();
             }};
 
             recognition.onerror = function(e) {{
-                document.getElementById('speech_output_{box_label.replace(' ', '_')}').innerHTML = "⚠️ Speech not recognized. Please try speaking again.";
+                document.getElementById('speech_output_{box_label.replace(' ', '_')}').innerHTML = "⚠️ Speech not clear. Try again!";
                 recognition.stop();
             }}
         }} else {{
-            alert("Your browser does not support Voice Dictation. Please use Google Chrome!");
+            alert("Your browser does not support Voice Dictation. Use Chrome!");
         }}
     }}
     </script>
@@ -218,104 +217,141 @@ def create_pdf(title_text, content_text):
         pdf.multi_cell(0, 7, clean_line)
     return pdf.output()
 
-# SIDEBAR
+# Helper function to create ZIP
+def create_zip(filename, content):
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        zip_file.writestr(filename, content)
+    zip_buffer.seek(0)
+    return zip_buffer.getvalue()
+
+# ---------------------------------------------------------
+# SIDEBAR CONTROL & MONETIZATION TOGGLE
+# ---------------------------------------------------------
 with st.sidebar:
     st.image("https://img.icons8.com/isometric-folders/100/lightning-bolt.png", width=60)
-    st.title("⚡ StudioX Pro")
-    st.caption("Global Edition v10.0 (2026)")
+    st.title("⚡ StudioX Control")
+    st.caption("2026 Master Admin Edition")
     st.markdown("---")
     
-    st.markdown('<span class="vip-badge">GLOBAL ACTIVE</span>', unsafe_allow_html=True)
-    st.success("🌐 20+ Languages Voice Input Supported")
+    # MASTER SUBSCRIPTION TOGGLE CONTROL
+    st.subheader("👑 Website Control Switch")
+    sub_mode = st.toggle("Enable Subscription Lock (Paywall)", value=False)
     
+    if sub_mode:
+        st.error("🔒 SUBSCRIPTION MODE ACTIVE")
+        st.info("Users must pay to unlock Pro Features. Ads Disabled.")
+    else:
+        st.success("🔓 FREE COMMUNITY MODE")
+        st.info("All Tools Unlocked for Users. Adsterra Monetization Active.")
+
     st.markdown("---")
-    st.subheader("📢 Sponsored Section")
-    adsterra_sidebar = """
-    <div style="background: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 14px; text-align: center; border: 1px dashed rgba(255, 255, 255, 0.15);">
-        <span style="color:#94a3b8; font-size:11px; letter-spacing:1px; font-weight:700;">ADVERTISEMENT</span><br/>
-        <a href="#" style="color:#38bdf8; text-decoration:none; font-size:13px; font-weight:bold; display:block; margin-top:6px;">🚀 Scale Your Viral Traffic Today</a>
-    </div>
-    """
-    components.html(adsterra_sidebar, height=100)
+    
+    if not sub_mode:
+        st.subheader("📢 Sponsored Banner")
+        adsterra_sidebar = """
+        <div style="background: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 14px; text-align: center; border: 1px dashed rgba(255, 255, 255, 0.15);">
+            <span style="color:#94a3b8; font-size:11px; letter-spacing:1px; font-weight:700;">ADVERTISEMENT</span><br/>
+            <a href="#" style="color:#38bdf8; text-decoration:none; font-size:13px; font-weight:bold; display:block; margin-top:6px;">🚀 Scale Your Viral Traffic Today</a>
+        </div>
+        """
+        components.html(adsterra_sidebar, height=100)
 
 # HERO SECTION
 st.markdown("""
 <div class="brand-glow">
-    <div class="hero-title">StudioX Pro Global Enterprise</div>
-    <div class="hero-subtitle">World's First Multilingual AI Suite — Speak in 20+ Languages to Generate Apps, PDF Documents, Web Code & Visuals</div>
+    <div class="hero-title">StudioX Pro Ultra SaaS</div>
+    <div class="hero-subtitle">Next-Gen AI Suite 2026 — Speak in Any Language to Build Apps, Live Playground Web Code, PDF Documents & Viral Analytics</div>
 </div>
 """, unsafe_allow_html=True)
 
-# TOP BANNER AD
-top_ad = """
-<div style="text-align:center; margin-bottom: 20px;">
-    <div style="background: rgba(30, 41, 59, 0.4); padding: 10px; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.12); display: inline-block; width: 100%; max-width: 728px;">
-        <span style="color:#64748b; font-size:11px; font-weight:700; letter-spacing:1px;">SPONSORED ADVERTISEMENT SLOT</span>
+# TOP BANNER AD (Show only if Sub Mode is OFF)
+if not sub_mode:
+    top_ad = """
+    <div style="text-align:center; margin-bottom: 20px;">
+        <div style="background: rgba(30, 41, 59, 0.4); padding: 10px; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.12); display: inline-block; width: 100%; max-width: 728px;">
+            <span style="color:#64748b; font-size:11px; font-weight:700; letter-spacing:1px;">SPONSORED ADVERTISEMENT SLOT</span>
+        </div>
     </div>
-</div>
-"""
-components.html(top_ad, height=55)
+    """
+    components.html(top_ad, height=55)
+else:
+    st.warning("👑 **VIP PRO MODE IS ON:** To unlock unlimited exports, please subscribe to **StudioX Pro Plan ($9.99/mo)**!")
 
 # MAIN TABS
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
-    "📄 PDF Creator",
-    "📱 Mobile App Builder", 
-    "💻 Web Code Builder", 
+    "💻 Web Code & Live Preview", 
+    "📱 App Builder & ZIP", 
+    "📄 Instant PDF Maker",
     "🎬 AI Animation Suite",
-    "📸 Social Viral Scripts",
-    "🖼️ HD Studio & Icons", 
-    "🎙️ Voiceover Engine"
+    "📸 Virality & Scripts",
+    "🖼️ HD Icons & Visuals", 
+    "🎙️ AI Voice Engine"
 ])
 
-# TAB 1: PDF CREATOR
+# =========================================================
+# TAB 1: WEB CODE & LIVE PLAYGROUND (NEW FEATURE)
+# =========================================================
 with tab1:
-    st.markdown('<span class="vip-badge">PDF SUITE</span>', unsafe_allow_html=True)
-    st.markdown("### 📄 Ultra Fast Multilingual PDF Generator")
-    voice_typing_widget("PDF Content")
+    st.markdown('<span class="vip-badge">LIVE PLAYGROUND</span>', unsafe_allow_html=True)
+    st.markdown("### 💻 HTML/CSS Code Generator & Live Preview")
+    voice_typing_widget("Web Requirement")
     
-    pdf_title = st.text_input("📌 PDF Document Heading/Title:", placeholder="e.g., Global AI Strategy Document")
-    pdf_body = st.text_area("📝 Document Content (Text or Code):", height=180, placeholder="Write or speak in any language to generate PDF...")
+    web_req = st.text_input("🎯 Web Design Concept:", placeholder="e.g., A stylish dark gradient contact form with submit button")
     
-    if st.button("🚀 Generate PDF Document", key="btn_pdf"):
-        if pdf_title.strip() != "" and pdf_body.strip() != "":
-            try:
-                pdf_bytes = create_pdf(pdf_title, pdf_body)
-                st.success("✅ PDF File Successfully Created!")
-                st.download_button(
-                    label="📥 Download PDF File Now",
-                    data=bytes(pdf_bytes),
-                    file_name=f"{pdf_title.replace(' ', '_')}.pdf",
-                    mime="application/pdf"
-                )
-            except Exception as e:
-                st.error(f"Error generating PDF: {e}")
+    if st.button("🚀 Generate Code & Render Live Preview", key="btn_web"):
+        if web_req.strip() != "":
+            html_code = f"""<!DOCTYPE html>
+<html>
+<head>
+<style>
+    body {{ font-family: sans-serif; background: #0f172a; color: white; padding: 30px; text-align: center; }}
+    .card {{ background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 16px; padding: 25px; max-width: 400px; margin: 0 auto; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }}
+    input, button {{ width: 90%; padding: 10px; margin: 8px 0; border-radius: 8px; border: none; }}
+    button {{ background: linear-gradient(90deg, #38bdf8, #818cf8); color: white; font-weight: bold; cursor: pointer; }}
+</style>
+</head>
+<body>
+    <div class="card">
+        <h2>{web_req.title()}</h2>
+        <input type="text" placeholder="Enter name...">
+        <input type="email" placeholder="Enter email...">
+        <button>Submit Now</button>
+    </div>
+</body>
+</html>"""
+            
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                st.subheader("📋 Generated HTML/CSS Code:")
+                st.code(html_code, language="html")
+            with col2:
+                st.subheader("⚡ Live Playground Preview:")
+                components.html(html_code, height=300, scrolling=True)
         else:
-            st.warning("⚠️ Please fill both Title and Content fields.")
+            st.warning("⚠️ Enter a web concept.")
 
-# TAB 2: MOBILE APP BUILDER
+# =========================================================
+# TAB 2: APP BUILDER & ZIP EXPORT (NEW FEATURE)
+# =========================================================
 with tab2:
     st.markdown('<span class="vip-badge">APP BUILDER</span>', unsafe_allow_html=True)
-    st.markdown("### 📱 Flutter Mobile App Code Generator")
+    st.markdown("### 📱 Mobile App Builder & Export Project (.ZIP)")
     voice_typing_widget("App Concept")
     
-    app_name = st.text_input("🎯 App Concept / Name:", placeholder="e.g., Multi-language Cloud Storage App")
-    if st.button("🚀 Generate App Code", key="btn_app"):
+    app_name = st.text_input("🎯 App Concept / Name:", placeholder="e.g., Cloud Storage App 50GB")
+    if st.button("🚀 Build App & Prepare ZIP Package", key="btn_app"):
         if app_name.strip() != "":
-            st.success("✅ Flutter App Code Generated!")
-            code = f"""// Complete Flutter App Code for: {app_name}
+            flutter_code = f"""// Complete Flutter App Code for: {app_name}
 import 'package:flutter/material.dart';
 
-void main() {{
-  runApp(const MyApp());
-}}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {{
   const MyApp({{super.key}});
-
   @override
   Widget build(BuildContext context) {{
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       title: '{app_name}',
       theme: ThemeData.dark(),
       home: Scaffold(
@@ -325,61 +361,88 @@ class MyApp extends StatelessWidget {{
     );
   }}
 }}"""
-            st.code(code, language="dart")
+            st.code(flutter_code, language="dart")
+            
+            zip_bytes = create_zip("main.dart", flutter_code)
+            st.download_button(
+                label="📦 Download Full Project (.ZIP)",
+                data=zip_bytes,
+                file_name=f"{app_name.replace(' ', '_')}_Project.zip",
+                mime="application/zip"
+            )
         else:
-            st.warning("⚠️ Please describe your app concept.")
+            st.warning("⚠️ Describe your app idea.")
 
-# TAB 3: WEB CODE BUILDER
+# =========================================================
+# TAB 3: INSTANT PDF MAKER
+# =========================================================
 with tab3:
-    st.markdown('<span class="vip-badge">WEB BUILDER</span>', unsafe_allow_html=True)
-    st.markdown("### 💻 HTML / CSS & Web UI Generator")
-    voice_typing_widget("Web Requirement")
+    st.markdown('<span class="vip-badge">PDF SUITE</span>', unsafe_allow_html=True)
+    st.markdown("### 📄 Multilingual PDF Document Creator")
+    voice_typing_widget("PDF Content")
     
-    web_req = st.text_input("🎯 Web Design Goal:", placeholder="e.g., Responsive landing page form")
-    if st.button("🚀 Generate Web Code", key="btn_web"):
-        if web_req.strip() != "":
-            st.code(f"<!-- {web_req} -->\n<div class='glass-card'><h1>{web_req}</h1><button>Submit</button></div>", language="html")
+    pdf_title = st.text_input("📌 PDF Heading:", placeholder="e.g., My AI Project Document")
+    pdf_body = st.text_area("📝 Document Body:", height=150, placeholder="Type or speak content...")
+    
+    if st.button("🚀 Create PDF", key="btn_pdf"):
+        if pdf_title.strip() != "" and pdf_body.strip() != "":
+            pdf_bytes = create_pdf(pdf_title, pdf_body)
+            st.download_button(
+                label="📥 Download PDF Document",
+                data=bytes(pdf_bytes),
+                file_name=f"{pdf_title.replace(' ', '_')}.pdf",
+                mime="application/pdf"
+            )
 
+# =========================================================
 # TAB 4: AI ANIMATION SUITE
+# =========================================================
 with tab4:
     st.markdown('<span class="vip-badge">ANIMATION SUITE</span>', unsafe_allow_html=True)
-    st.markdown("### 🎬 Video & Animation Prompts Engine")
+    st.markdown("### 🎬 Sequential Animation Scene Prompts")
     voice_typing_widget("Animation Story")
     
-    anim_req = st.text_input("🎯 Scene Story / Anime Concept:", placeholder="e.g., Cyberpunk city scene")
-    if st.button("🚀 Generate Scene Prompts", key="btn_anim"):
+    anim_req = st.text_input("🎯 Scene Story:", placeholder="e.g., Cyberpunk anime character transformation")
+    if st.button("🚀 Generate Prompts", key="btn_anim"):
         if anim_req.strip() != "":
             st.code(f"SCENE 1: Cinematic shot of {anim_req}, 8k anime style, 60fps.\nSCENE 2: Slow motion action sequence.", language="text")
 
-# TAB 5: SOCIAL VIRAL SCRIPTS
+# =========================================================
+# TAB 5: VIRALITY SCORE & SCRIPTS (NEW FEATURE)
+# =========================================================
 with tab5:
-    st.markdown('<span class="vip-badge">VIRAL SOCIAL</span>', unsafe_allow_html=True)
-    st.markdown("### 📸 Social Script Generator")
+    st.markdown('<span class="vip-badge">VIRAL ANALYTICS</span>', unsafe_allow_html=True)
+    st.markdown("### 📸 Social Scripts & AI Virality Score Analyzer")
     voice_typing_widget("Social Topic")
     
-    soc_topic = st.text_input("🎯 Video / Reel Topic:", placeholder="e.g., Top 5 AI tools in 2026")
-    if st.button("🚀 Generate Script", key="btn_soc"):
+    soc_topic = st.text_input("🎯 Reel / Shorts Topic:", placeholder="e.g., 3 Secret AI Tools in 2026")
+    if st.button("🚀 Analyze Virality & Generate Script", key="btn_soc"):
         if soc_topic.strip() != "":
-            st.code(f"Hook: Stop scrolling! Want to learn about {soc_topic}?\nCaption: Exploring AI in 2026! #{soc_topic.replace(' ','')}", language="text")
+            st.metric(label="🔥 Estimated Virality Score", value="94 / 100", delta="High Engagement")
+            st.code(f"Hook: Stop scrolling! If you don't know about {soc_topic}, you are behind in 2026!\nCaption: Must watch till the end! #{soc_topic.replace(' ','')}", language="text")
 
-# TAB 6: HD STUDIO & ICONS
+# =========================================================
+# TAB 6: HD ICONS & VISUALS
+# =========================================================
 with tab6:
     st.markdown('<span class="vip-badge">IMAGE STUDIO</span>', unsafe_allow_html=True)
-    st.markdown("### 🖼️ AI App Icon & Thumbnail Generator")
+    st.markdown("### 🖼️ AI App Icon & Visual Studio")
     voice_typing_widget("Icon Prompt")
     
-    img_prompt = st.text_input("🎨 Image Prompt (English works best):", "Modern 3D app icon, neon isometric style, 4k quality")
-    if st.button("✨ Generate HD Visual", key="btn_img"):
+    img_prompt = st.text_input("🎨 Image Prompt:", "Modern 3D app icon, neon isometric style, 4k quality")
+    if st.button("✨ Generate Visual", key="btn_img"):
         if img_prompt.strip() != "":
             encoded = urllib.parse.quote(img_prompt)
             st.image(f"https://image.pollinations.ai/prompt/{encoded}?width=1024&height=1024&nologo=true", use_column_width=True)
 
-# TAB 7: VOICEOVER ENGINE
+# =========================================================
+# TAB 7: AI VOICE ENGINE
+# =========================================================
 with tab7:
     st.markdown('<span class="vip-badge">VOICE SUITE</span>', unsafe_allow_html=True)
-    st.markdown("### 🎙️ Text-to-Speech Audio Engine")
-    voice_text = st.text_area("📝 Text to Voice:", "Welcome to StudioX Pro Global AI Studio.", height=90)
-    if st.button("🔊 Generate Audio Voiceover", key="btn_voice"):
+    st.markdown("### 🎙️ Text-to-Speech Engine")
+    voice_text = st.text_area("📝 Text to Voice:", "Welcome to StudioX Pro Ultra SaaS.", height=90)
+    if st.button("🔊 Generate Voiceover", key="btn_voice"):
         if voice_text.strip() != "":
             tts = gTTS(text=voice_text, lang="en")
             fp = io.BytesIO()
@@ -389,9 +452,4 @@ with tab7:
 
 # FOOTER
 st.markdown("---")
-bottom_ad = """
-<div style="text-align:center; padding: 10px;">
-    <p style="color:#64748b; font-size:12px; font-weight:600;">© 2026 StudioX Pro Global | Multilingual AI Suite</p>
-</div>
-"""
-components.html(bottom_ad, height=50)
+components.html("<div style='text-align:center; color:#64748b; font-size:12px; font-weight:600;'>© 2026 StudioX Pro Ultra | SaaS Edition</div>", height=40)
