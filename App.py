@@ -1,114 +1,100 @@
 import streamlit as st
-from gtts import gTTS
+import streamlit.components.v1 as components
+from PIL import Image
 import io
-import urllib.parse
-import requests
 
-# Page Configuration
-st.set_page_config(page_title="All-in-One AI Studio", page_icon="⚡", layout="wide")
+# Page Config
+st.set_page_config(page_title="AI Creator Toolkit 2026", page_icon="🚀", layout="wide")
 
-st.title("⚡ Ultimate Free AI Studio")
-st.write("एक ही जगह पर AI Voice, YouTube/Instagram Thumbnails और AI Video/Animation बनाएँ!")
+# Header
+st.title("🚀 All-in-One AI Creator Toolkit")
+st.write("2026 के सभी ज़रूरतमंद AI टूल्स एक ही जगह पर—बिलकुल मुफ़्त!")
 
-# Tabs Hierarchy
+# ----------------- ADSTERRA AD SLOT -----------------
+# अपनी Adsterra का 300x250 या Native Banner कोड नीचे पेस्ट करें
+adsterra_code = """
+<div style="text-align:center;">
+    <p style="color:gray; font-size:12px;">Advertisement</p>
+    <!-- Paste your Adsterra Code Here -->
+</div>
+"""
+components.html(adsterra_code, height=150)
+# ----------------------------------------------------
+
+# Tabs
 tab1, tab2, tab3 = st.tabs([
-    "🔊 Multi-Lang Text to Voice", 
-    "🖼️ Thumbnail & Image AI Generator", 
-    "🎥 AI Video / Animation"
+    "🔥 Viral Script & Hook", 
+    "🖼️ Image Converter & Resizer", 
+    "🎨 Pro Prompt Enhancer"
 ])
 
-# ----------------- TAB 1: TEXT TO VOICE (MULTI-LANGUAGE) -----------------
+# ----------------- TAB 1: VIRAL SCRIPT GENERATOR -----------------
 with tab1:
-    st.header("🔊 Voice Generator (Text to Speech)")
-    st.write("अपनी पसंद की भाषा में टेक्स्ट से आवाज़ (Audio) बनाएँ:")
+    st.header("🔥 Viral Script & Hook Generator")
+    st.write("YouTube Shorts / Reels के लिए 3 सेकंड में वायरल स्क्रिप्ट्स बनाएं!")
     
-    text_input = st.text_area("अपना टेक्स्ट लिखें:", "नमस्ते! आपकी AI Studio में आपका स्वागत है।", height=100)
+    topic = st.text_input("अपने वीडियो का Topic लिखें (e.g., How to earn money online):")
+    platform = st.selectbox("प्लैटफॉर्म चुनें:", ["YouTube Shorts", "Instagram Reel", "TikTok"])
     
-    # Language Selection
-    languages = {
-        "Hindi (हिंदी)": "hi",
-        "English": "en",
-        "Spanish": "es",
-        "French": "fr",
-        "German": "de",
-        "Tamil (தமிழ்)": "ta",
-        "Bengali (বাংলা)": "bn"
-    }
-    
-    selected_lang = st.selectbox("भाषा (Language) चुनें:", list(languages.keys()))
-    lang_code = languages[selected_lang]
-    
-    if st.button("🎙️ Generate Voice"):
-        if text_input.strip() != "":
-            with st.spinner("ऑडियो तैयार हो रहा है..."):
-                try:
-                    tts = gTTS(text=text_input, lang=lang_code)
-                    fp = io.BytesIO()
-                    tts.write_to_fp(fp)
-                    fp.seek(0)
-                    st.audio(fp, format="audio/mp3")
-                    st.success("✅ ऑडियो तैयार है! ऊपर 3-dots पर क्लिक करके डाउनलोड करें।")
-                except Exception as e:
-                    st.error("ऑडियो जनरेट करने में समस्या आई।")
+    if st.button("✨ Generate Script"):
+        if topic.strip() != "":
+            st.subheader("📌 Catchy Hook (शुरुआत में बोलने के लिए):")
+            st.info(f"👉 'क्या आप भी {topic} की यह सीक्रेट ट्रिक नहीं जानते? रुकिए और पूरा वीडियो देखिए!'")
+            
+            st.subheader("📜 Main Video Script:")
+            st.write(f"1. **0-3 sec:** तुरंत ध्यान खींचने वाली लाइन (Hook) बोलें।\n2. **3-15 sec:** {topic} के बारे में मुख्य 2-3 पॉइंट्स बताएं।\n3. **15-30 sec:** कॉल-टू-एक्शन (उदा: 'ऐसे और ट्रिक्स के लिए अभी फॉलो करें!')।")
+            
+            st.subheader("🏷️ Trending Hashtags:")
+            st.code(f"#{topic.replace(' ', '')} #ViralReels #Creator2026 #{platform.replace(' ', '')} #Trending")
         else:
-            st.warning("कृपया कुछ टेक्स्ट लिखें।")
+            st.warning("कृपया कोई Topic लिखें।")
 
-# ----------------- TAB 2: THUMBNAIL & IMAGE GENERATOR -----------------
+# ----------------- TAB 2: IMAGE CONVERTER & RESIZER -----------------
 with tab2:
-    st.header("🖼️ AI Thumbnail & Image Generator")
-    st.write("YouTube, Instagram या सोशल मीडिया के लिए HD Thumbnails और Images बनाएँ।")
+    st.header("🖼️ Image Converter & Resizer")
+    st.write("इमेज का साइज़ कम करें और फ़ॉर्मेट बदलें!")
     
-    img_prompt = st.text_input("Prompt लिखें (English में):", "A glowing futuristic cyber robot, high details, 4k thumbnail")
+    uploaded_file = st.file_uploader("अपनी फोटो अपलोड करें:", type=["jpg", "jpeg", "png", "webp"])
     
-    # Aspect Ratio for YouTube / Instagram
-    platform = st.selectbox("किस प्लेटफ़ॉर्म के लिए बनाना है?", [
-        "YouTube Thumbnail (16:9)", 
-        "Instagram Post / Square (1:1)", 
-        "Instagram Reel / Story (9:16)"
-    ])
-    
-    # Dimension calculation
-    if platform == "YouTube Thumbnail (16:9)":
-        width, height = 1280, 720
-    elif platform == "Instagram Reel / Story (9:16)":
-        width, height = 720, 1280
-    else:
-        width, height = 1024, 1024
+    if uploaded_file is not None:
+        image = Image.open(uploaded_file)
+        st.image(image, caption="Uploaded Image", use_column_width=True)
+        
+        format_choice = st.selectbox("किस फ़ॉर्मेट में कन्वर्ट करना है?", ["PNG", "JPEG", "WEBP"])
+        quality_val = st.slider("Quality/Compression (100 = Best Quality, 50 = Smaller Size):", 10, 100, 85)
+        
+        if st.button("⚡ Convert & Compress"):
+            buffer = io.BytesIO()
+            if format_choice == "JPEG":
+                image.convert("RGB").save(buffer, format="JPEG", quality=quality_val)
+                mime_type = "image/jpeg"
+                ext = "jpg"
+            elif format_choice == "WEBP":
+                image.save(buffer, format="WEBP", quality=quality_val)
+                mime_type = "image/webp"
+                ext = "webp"
+            else:
+                image.save(buffer, format="PNG")
+                mime_type = "image/png"
+                ext = "png"
+                
+            buffer.seek(0)
+            st.success("इमेज तैयार है! नीचे से डाउनलोड करें:")
+            st.download_button(label=f"📥 Download .{ext} Image", data=buffer, file_name=f"converted_image.{ext}", mime=mime_type)
 
-    if st.button("✨ Generate Image / Thumbnail"):
-        if img_prompt.strip() != "":
-            with st.spinner("AI इमेज तैयार कर रहा है (3-5 सेकंड)..."):
-                try:
-                    encoded_prompt = urllib.parse.quote(img_prompt)
-                    media_url = f"https://image.pollinations.ai/prompt/{encoded_prompt}?width={width}&height={height}&nologo=true"
-                    
-                    st.image(media_url, caption=f"Platform: {platform} | Prompt: {img_prompt}", use_column_width=True)
-                    st.success("✅ इमेज तैयार है! इमेज पर लॉन्ग-प्रेस या राइट-क्लिक करके सेव कर लें।")
-                except Exception as e:
-                    st.error("इमेज जनरेट करने में समस्या आई।")
-        else:
-            st.warning("कृपया प्रॉम्ट लिखें।")
-
-# ----------------- TAB 3: AI VIDEO GENERATOR -----------------
+# ----------------- TAB 3: PRO PROMPT ENHANCER -----------------
 with tab3:
-    st.header("🎥 AI Video / Animation Generator")
-    st.write("अंग्रेज़ी (English) में प्रॉम्ट लिखकर एनिमेटेड AI Visuals जनरेट करें।")
+    st.header("🎨 Pro AI Prompt Enhancer")
+    st.write("साधारण प्रॉम्ट को ChatGPT, Midjourney और Sora के लिए 8K HD प्रॉम्ट में बदलें!")
     
-    video_prompt = st.text_input("Video Prompt:", "A cute panda dancing in the forest, 3d animation")
+    simple_prompt = st.text_input("साधारण प्रॉम्ट लिखें (e.g., A cat in space):")
+    style = st.selectbox("Style चुनें:", ["Cyberpunk / Futuristic", "Cinematic 8K Photorealistic", "3D Pixar Animation", "Anime / Manga"])
     
-    if st.button("🎬 Generate Video"):
-        if video_prompt.strip() != "":
-            with st.spinner("AI वीडियो तैयार कर रहा है..."):
-                try:
-                    API_URL = "https://api-inference.huggingface.co/models/cerspense/zeroscope_v2_576w"
-                    response = requests.post(API_URL, json={"inputs": video_prompt}, timeout=35)
-                    
-                    if response.status_code == 200:
-                        st.image(response.content, caption=f"Prompt: {video_prompt}", use_column_width=True)
-                        st.success("✅ एनिमेशन तैयार है! डाउनलोड करने के लिए इमेज को सेव करें।")
-                    else:
-                        st.warning("वीडियो सर्वर अभी बिज़ी है। आप 'Thumbnail/Image Generator' टैब से भी बेहतरीन विजुअल्स तुरंत बना सकते हैं!")
-                except Exception as e:
-                    st.error("वीडियो सर्वर टाइम-आउट हो गया। कृपया दोबारा कोशिश करें।")
+    if st.button("🚀 Enhance Prompt"):
+        if simple_prompt.strip() != "":
+            enhanced = f"{simple_prompt}, {style} style, ultra-detailed 8k resolution, volumetric lighting, photorealistic depth of field, masterpiece, highly intricate, Unreal Engine 5 render"
+            st.subheader("🔥 आपका Pro AI Prompt:")
+            st.code(enhanced, language="text")
+            st.success("इसे कॉपी करके ChatGPT, Midjourney या AI Image Tools में पेस्ट करें!")
         else:
             st.warning("कृपया प्रॉम्ट लिखें।")
