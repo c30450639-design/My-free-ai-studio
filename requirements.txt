@@ -1,2 +1,4 @@
 streamlit
+gTTS
 Pillow
+fpdf2
