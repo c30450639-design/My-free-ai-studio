@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import streamlit.components.v1 as components
 from PIL import Image
 import io
@@ -11,14 +11,14 @@ from fpdf import FPDF
 # PAGE CONFIGURATION
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="StudioX Pro 2026 | Enterprise AI Suite",
+    page_title="StudioX Pro 2026 | Free AI Suite",
     page_icon="💎",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
 # ---------------------------------------------------------
-# LUXURY ENTERPRISE CSS & AI ROBOT WIDGET STYLING
+# LUXURY ENTERPRISE CSS & AI ROBOT STYLING
 # ---------------------------------------------------------
 st.markdown("""
 <style>
@@ -132,16 +132,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------------------------------------
-# FLOATING AI ROBOT ASSISTANT WIDGET (HTML/JS)
+# FLOATING AI ROBOT ASSISTANT WIDGET
 # ---------------------------------------------------------
 robot_assistant_html = """
 <div id="bot-wrapper" style="position: fixed; bottom: 20px; right: 20px; z-index: 999999; font-family: sans-serif;">
-    <!-- Floating Robot Button -->
     <div id="bot-icon" onclick="toggleBotChat()" style="background: linear-gradient(135deg, #06b6d4, #7c3aed); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 8px 25px rgba(6, 182, 212, 0.6); transition: all 0.3s ease; border: 2px solid rgba(255,255,255,0.3);">
         <span style="font-size: 30px;">🤖</span>
     </div>
 
-    <!-- Chat Popup Window -->
     <div id="bot-chat-window" style="display: none; position: absolute; bottom: 75px; right: 0; width: 310px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); padding: 15px; color: white;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; margin-bottom: 10px;">
             <span style="font-weight: bold; color: #38bdf8; font-size: 14px;">🤖 StudioX AI Helper</span>
@@ -187,8 +185,6 @@ function sendBotMsg() {
         reply = "💻 <b>Web Code:</b> 'Web Code & Live Preview' टैब में जाएं, अपने पेज की जानकारी दें और लाइव प्रिव्यू देखें!";
     } else if (text.includes("voice") || text.includes("आवाज") || text.includes("बोल")) {
         reply = "🎙️ <b>Voice Typing:</b> हर टूल के ऊपर 'Voice Dictation' का बटन है, उस पर क्लिक करके अपनी भाषा में बोलें!";
-    } else if (text.includes("script") || text.includes("रील्स") || text.includes("shorts")) {
-        reply = "📸 <b>Virality & Scripts:</b> 'Virality & Scripts' टैब में जाकर अपनी वीडियो का टॉपिक लिखें!";
     }
 
     setTimeout(function() {
@@ -295,34 +291,27 @@ def create_zip(filename, content):
     return zip_buffer.getvalue()
 
 # ---------------------------------------------------------
-# SIDEBAR CONTROL & MONETIZATION TOGGLE
+# SIDEBAR CONTROL
 # ---------------------------------------------------------
 with st.sidebar:
     st.image("https://img.icons8.com/isometric-folders/100/lightning-bolt.png", width=60)
-    st.title("⚡ StudioX Control")
-    st.caption("2026 Master Admin Edition")
+    st.title("⚡ StudioX Pro")
+    st.caption("2026 Free Global AI Suite")
     st.markdown("---")
     
-    sub_mode = st.toggle("Enable Subscription Lock (Paywall)", value=False)
-    
-    if sub_mode:
-        st.error("🔒 SUBSCRIPTION MODE ACTIVE")
-        st.info("Users must pay to unlock Pro Features. Ads Disabled.")
-    else:
-        st.success("🔓 FREE COMMUNITY MODE")
-        st.info("All Tools Unlocked for Users. Adsterra Monetization Active.")
+    st.success("🔓 FREE FOR EVERYONE")
+    st.info("All Tools Unlocked for Global Users")
 
     st.markdown("---")
     
-    if not sub_mode:
-        st.subheader("📢 Sponsored Banner")
-        adsterra_sidebar = """
-        <div style="background: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 14px; text-align: center; border: 1px dashed rgba(255, 255, 255, 0.15);">
-            <span style="color:#94a3b8; font-size:11px; letter-spacing:1px; font-weight:700;">ADVERTISEMENT</span><br/>
-            <a href="#" style="color:#38bdf8; text-decoration:none; font-size:13px; font-weight:bold; display:block; margin-top:6px;">🚀 Scale Your Viral Traffic Today</a>
-        </div>
-        """
-        components.html(adsterra_sidebar, height=100)
+    st.subheader("📢 Sponsored Banner")
+    adsterra_sidebar = """
+    <div style="background: rgba(30, 41, 59, 0.5); padding: 12px; border-radius: 14px; text-align: center; border: 1px dashed rgba(255, 255, 255, 0.15);">
+        <span style="color:#94a3b8; font-size:11px; letter-spacing:1px; font-weight:700;">ADVERTISEMENT</span><br/>
+        <a href="#" style="color:#38bdf8; text-decoration:none; font-size:13px; font-weight:bold; display:block; margin-top:6px;">🚀 Scale Your Viral Traffic Today</a>
+    </div>
+    """
+    components.html(adsterra_sidebar, height=100)
 
 # HERO SECTION
 st.markdown("""
@@ -333,17 +322,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # TOP BANNER AD
-if not sub_mode:
-    top_ad = """
-    <div style="text-align:center; margin-bottom: 20px;">
-        <div style="background: rgba(30, 41, 59, 0.4); padding: 10px; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.12); display: inline-block; width: 100%; max-width: 728px;">
-            <span style="color:#64748b; font-size:11px; font-weight:700; letter-spacing:1px;">SPONSORED ADVERTISEMENT SLOT</span>
-        </div>
+top_ad = """
+<div style="text-align:center; margin-bottom: 20px;">
+    <div style="background: rgba(30, 41, 59, 0.4); padding: 10px; border-radius: 12px; border: 1px dashed rgba(255, 255, 255, 0.12); display: inline-block; width: 100%; max-width: 728px;">
+        <span style="color:#64748b; font-size:11px; font-weight:700; letter-spacing:1px;">SPONSORED ADVERTISEMENT SLOT</span>
     </div>
-    """
-    components.html(top_ad, height=55)
-else:
-    st.warning("👑 **VIP PRO MODE IS ON:** To unlock unlimited exports, please subscribe to **StudioX Pro Plan ($9.99/mo)**!")
+</div>
+"""
+components.html(top_ad, height=55)
 
 # MAIN TABS
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
@@ -494,7 +480,7 @@ with tab6:
 with tab7:
     st.markdown('<span class="vip-badge">VOICE SUITE</span>', unsafe_allow_html=True)
     st.markdown("### 🎙️ Text-to-Speech Engine")
-    voice_text = st.text_area("📝 Text to Voice:", "Welcome to StudioX Pro Ultra SaaS.", height=90)
+    voice_text = st.text_area("📝 Text to Voice:", "Welcome to StudioX Pro Ultra Free Suite.", height=90)
     if st.button("🔊 Generate Voiceover", key="btn_voice"):
         if voice_text.strip() != "":
             tts = gTTS(text=voice_text, lang="en")
@@ -505,4 +491,4 @@ with tab7:
 
 # FOOTER
 st.markdown("---")
-components.html("<div style='text-align:center; color:#64748b; font-size:12px; font-weight:600;'>© 2026 StudioX Pro Ultra | SaaS Edition</div>", height=40)
+components.html("<div style='text-align:center; color:#64748b; font-size:12px; font-weight:600;'>© 2026 StudioX Pro Ultra | Free Global AI Suite</div>", height=40)
