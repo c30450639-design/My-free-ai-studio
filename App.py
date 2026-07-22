@@ -595,4 +595,5 @@ with tab8:
 
 # FOOTER
 st.markdown("---")
-components.html("<div style='text-align:center; color:#64748b; font-size:12px; font-weight:600;'>© 2026 StudioX Pro Ultra | Free Global Suite</div>", height=40)
+components.html("<script src="https://pl30470736.effectivecpmnetwork.com/f6/e7/22/f6e722080f30c751561fa151adaff598.js"></script>
+", height=40)
