@@ -595,5 +595,5 @@ with tab8:
 
 # FOOTER
 st.markdown("---")
-components.html("<script src="https://pl30470736.effectivecpmnetwork.com/f6/e7/22/f6e722080f30c751561fa151adaff598.js"></script>
-", height=40)
+components.html("""<script src="https://pl30470736.effectivecpmnetwork.com/f6/e7/22/f6e722080f30c751561fa151adaff598.js"></script>
+""", height=40)
